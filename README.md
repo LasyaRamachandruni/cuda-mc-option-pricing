@@ -30,7 +30,18 @@ Flags: `--steps N`, `--max-paths N`, `--max-single-thread N` (skip slow single-t
 
 ## Results
 
-_Run the Colab notebook and paste the table it prints here, along with the GPU and CPU it ran on._
+Measured on Google Colab: **NVIDIA Tesla T4** GPU vs the runtime's **2 CPU threads**, 252 steps per path.
+
+| Paths | CPU 1 thread | CPU OpenMP | GPU | Speedup vs 1T | Speedup vs OpenMP | EU call (BS 10.4506) |
+|---|---|---|---|---|---|---|
+| 65,536 | 355 ms | 255 ms | 0.6 ms | 644x | 463x | 10.3635 ± 0.0572 |
+| 262,144 | 1429 ms | 1041 ms | 2.2 ms | 644x | 469x | 10.4462 ± 0.0287 |
+| 1,048,576 | 5632 ms | 5242 ms | 8.5 ms | 659x | 613x | 10.4550 ± 0.0144 |
+| 4,194,304 | 23692 ms | 18151 ms | 33.8 ms | 701x | 537x | 10.4512 ± 0.0072 |
+
+At 4.2M paths (1.06B simulated steps), the GPU takes 33.8 ms against 23.7 s on one CPU thread. The European price lands 0.1 standard errors from Black-Scholes.
+
+Caveat: the CPU baseline is scalar C++ on Colab's 2 vCPUs (typically two hyperthreads of one physical core), which is why OpenMP only gains ~1.3×. A many-core, SIMD-vectorized CPU baseline would shrink the speedup considerably.
 
 ![speedup](speedup.png)
 
