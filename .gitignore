@@ -4,3 +4,5 @@ mc_cpu
 *.sqlite
 .ipynb_checkpoints/
 results.zip
+*.o
+test_cpu
