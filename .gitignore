@@ -3,3 +3,4 @@ mc_cpu
 *.nsys-rep
 *.sqlite
 .ipynb_checkpoints/
+results.zip
