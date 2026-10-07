@@ -1,0 +1,29 @@
+name: CPU test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cpu-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain info
+        run: |
+          g++ --version | head -1
+          nproc
+          lscpu | grep 'Model name'
+
+      - name: Build (CPU only)
+        run: make mc_cpu test_cpu
+
+      - name: Correctness test
+        run: make test
+
+      - name: Small CPU benchmark (smoke test)
+        run: |
+          mkdir -p results
+          ./mc_cpu --max-paths 262144 --csv results/ci_cpu.csv --label github-actions
+          cat results/ci_cpu.csv
