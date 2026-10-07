@@ -1,0 +1,5 @@
+label,cpu_model,cpu_threads,gpu_name,paths,steps,scalar_1t_ms,simd_1t_ms,simd_omp_ms,gpu_kernel_ms,gpu_total_ms,simd_omp_vs_scalar,gpu_vs_scalar_1t,gpu_vs_simd_omp,bs,eu_scalar,eu_simd,eu_gpu,eu_se,eu_z_bs,asian_scalar,asian_simd,asian_gpu,asian_se,max_gap_se
+2-vCPU sandbox (no GPU),Intel(R) Xeon(R) Processor @ 2.10GHz,2,none,65536,252,269.863,36.933,19.173,nan,nan,14.07,nan,nan,10.450584,10.363481,10.363482,nan,0.057159,1.524,5.757930,5.757934,nan,0.031234,0.0001
+2-vCPU sandbox (no GPU),Intel(R) Xeon(R) Processor @ 2.10GHz,2,none,262144,252,1055.396,159.625,78.057,nan,nan,13.52,nan,nan,10.450584,10.446164,10.446166,nan,0.028679,0.154,5.792337,5.792341,nan,0.015602,0.0003
+2-vCPU sandbox (no GPU),Intel(R) Xeon(R) Processor @ 2.10GHz,2,none,1048576,252,4488.438,651.847,365.181,nan,nan,12.29,nan,nan,10.450584,10.455016,10.455017,nan,0.014374,0.308,5.781601,5.781605,nan,0.007809,0.0005
+2-vCPU sandbox (no GPU),Intel(R) Xeon(R) Processor @ 2.10GHz,2,none,4194304,252,18267.720,2575.829,1349.804,nan,nan,13.53,nan,nan,10.450584,10.451235,10.451236,nan,0.007189,0.091,5.780098,5.780102,nan,0.003907,0.0010

@@ -1,0 +1,23 @@
+CPU correctness test: S0=100 K=100 r=0.05 sigma=0.20 T=1.0, 252 steps, 2 threads
+Black-Scholes European call      = 10.450584
+Geometric Asian call (closed form) = 5.565509
+
+European call
+  scalar      262144 paths: 10.4462 +- 0.0287
+  SIMD+OMP   1048576 paths: 10.4550 +- 0.0144
+  [PASS] scalar European vs Black-Scholes (|diff|/SE)                 0.154 (limit 3)
+  [PASS] SIMD+OMP European vs Black-Scholes (|diff|/SE)               0.308 (limit 3)
+  [PASS] scalar vs SIMD European, same paths (|diff|/SE)              0.000 (limit 0.01)
+  [PASS] scalar vs SIMD Asian, same paths (|diff|/SE)                 0.000 (limit 0.01)
+
+Arithmetic Asian call
+  scalar      262144 paths: 5.7923 +- 0.0156
+  SIMD+OMP   1048576 paths: 5.7816 +- 0.0078
+  reference   262144 paths: 5.7820 +- 0.0004  (mt19937_64, double, geometric control variate, corr 0.9996)
+  reference geometric MC: 5.5768 +- 0.0151 (closed form 5.5655)
+  [PASS] reference geometric MC vs closed form (|diff|/SE)            0.743 (limit 3)
+  [PASS] scalar Asian vs reference (|diff|/combined SE)               0.664 (limit 3)
+  [PASS] SIMD+OMP Asian vs reference (|diff|/combined SE)             0.048 (limit 3)
+  [PASS] geometric < arithmetic Asian < European (bool)               1.000 (limit 1)
+
+ALL PASSED (0 failures)

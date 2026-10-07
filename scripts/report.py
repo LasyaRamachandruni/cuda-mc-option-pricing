@@ -40,7 +40,7 @@ def main(path):
     steps = r0["steps"]
 
     lines = []
-    label = f" ({r0['label']})" if r0["label"] else ""
+    label = f", {r0['label']}" if r0["label"] else ""
     lines.append(f"**Hardware{label}:** CPU {r0['cpu_model']}, {threads} threads visible to OpenMP"
                  + (f"; GPU {r0['gpu_name']}" if has_gpu else "; no GPU") + ".  ")
     lines.append(f"**Workload:** {steps} time steps per path; times are the fastest of "
