@@ -2,9 +2,11 @@ CXX      ?= g++
 NVCC     ?= nvcc
 CXXFLAGS ?= -O3 -std=c++17 -fopenmp
 # The SIMD baseline needs -march=native for AVX2/AVX-512 and -ffast-math so GCC
-# uses glibc's vector math (libmvec). Only cpu_simd.cpp gets these flags; the
-# scalar reference keeps normal IEEE math.
-SIMDFLAGS ?= -O3 -std=c++17 -fopenmp -march=native -ffast-math
+# uses glibc's vector math (libmvec). -fno-associative-math stops GCC from
+# reordering float adds: with it on, the AVX2 build drifted to a small but
+# systematic +6e-5 price bias vs the scalar and GPU code. Only cpu_simd.cpp
+# gets these flags; the scalar reference keeps normal IEEE math.
+SIMDFLAGS ?= -O3 -std=c++17 -fopenmp -march=native -ffast-math -fno-associative-math
 NVFLAGS  ?= -O3 -std=c++17 -arch=native -Xcompiler -fopenmp
 
 .PHONY: all test bench-cpu run clean

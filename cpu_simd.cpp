@@ -7,9 +7,12 @@
 // AVX2/AVX-512 registers, with expf/logf/sinf/cosf going to glibc's vector math
 // library (libmvec).
 //
-// Build with: -O3 -march=native -ffast-math -fopenmp
+// Build with: -O3 -march=native -ffast-math -fno-associative-math -fopenmp
 // -ffast-math is needed for GCC to call the libmvec vector functions. It's kept
 // to this file so the scalar reference is compiled with normal IEEE semantics.
+// -fno-associative-math matters: without it the AVX2 build reorders float math
+// and every path's payoff came out slightly high (mean price +6e-5 relative,
+// about 0.09 SE at 4M paths and growing with path count).
 //
 // Paths use the same counter-based RNG as the scalar and GPU code, so path i is
 // the same everywhere and prices agree to float rounding.

@@ -2,10 +2,10 @@
 //
 // 1. European call from the scalar and SIMD+OpenMP pricers is within 3 standard
 //    errors of the Black-Scholes closed form.
-// 2. Scalar and SIMD simulate the same paths, so they must agree to < 0.1 SE.
-//    They aren't bit-identical (float rounding over 252 steps, and the SIMD
-//    file uses -ffast-math vector exp/log), but a real bug in the vectorized
-//    loop would show up as a gap of many SEs.
+// 2. Scalar and SIMD simulate the same paths, so they must agree to < 0.01 SE.
+//    They aren't bit-identical (the SIMD file uses libmvec's vector exp/log/
+//    sin/cos and FMA), but the differences should be unbiased rounding. This
+//    check caught a systematic bias from -ffast-math reassociation.
 // 3. Asian arithmetic call vs an independent reference: a double-precision
 //    simulation with a different RNG (std::mt19937_64 streams) that uses the
 //    discretely monitored geometric Asian call (closed form) as a control
@@ -133,10 +133,10 @@ int main() {
           std::fabs(eu_s - bs) / se_s, 3);
     check(std::fabs(eu_v - bs) / se_v < 3, "SIMD+OMP European vs Black-Scholes (|diff|/SE)",
           std::fabs(eu_v - bs) / se_v, 3);
-    check(std::fabs(eu_s - eu_vs) / se_s < 0.1, "scalar vs SIMD European, same paths (|diff|/SE)",
-          std::fabs(eu_s - eu_vs) / se_s, 0.1);
-    check(std::fabs(as_s - as_vs) / ase_s < 0.1, "scalar vs SIMD Asian, same paths (|diff|/SE)",
-          std::fabs(as_s - as_vs) / ase_s, 0.1);
+    check(std::fabs(eu_s - eu_vs) / se_s < 0.01, "scalar vs SIMD European, same paths (|diff|/SE)",
+          std::fabs(eu_s - eu_vs) / se_s, 0.01);
+    check(std::fabs(as_s - as_vs) / ase_s < 0.01, "scalar vs SIMD Asian, same paths (|diff|/SE)",
+          std::fabs(as_s - as_vs) / ase_s, 0.01);
 
     // --- 3: Asian vs independent control-variate reference
     const long long n_ref = 1 << 18;
