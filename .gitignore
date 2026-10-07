@@ -6,3 +6,4 @@ mc_cpu
 results.zip
 *.o
 test_cpu
+colab_results.zip
