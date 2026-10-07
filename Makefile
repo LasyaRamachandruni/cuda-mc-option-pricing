@@ -7,9 +7,9 @@ CXXFLAGS ?= -O3 -std=c++17 -fopenmp
 SIMDFLAGS ?= -O3 -std=c++17 -fopenmp -march=native -ffast-math
 NVFLAGS  ?= -O3 -std=c++17 -arch=native -Xcompiler -fopenmp
 
-.PHONY: all bench-cpu run clean
+.PHONY: all test bench-cpu run clean
 
-all: mc_cpu
+all: mc_cpu test_cpu
 
 cpu_simd.o: cpu_simd.cpp mc_core.h
 	$(CXX) $(SIMDFLAGS) -c cpu_simd.cpp -o $@
@@ -21,6 +21,14 @@ mc: mc_option.cu cpu_simd.o mc_core.h
 # CPU-only build of the same benchmark (any machine with g++)
 mc_cpu: mc_option.cu cpu_simd.o mc_core.h
 	$(CXX) $(CXXFLAGS) -DCPU_ONLY -x c++ mc_option.cu -x none cpu_simd.o -o $@ -lm
+
+# CPU correctness test: European vs Black-Scholes, Asian vs an independent
+# control-variate reference. No GPU needed; this is what CI runs.
+test_cpu: test_cpu.cpp cpu_simd.o mc_core.h
+	$(CXX) $(CXXFLAGS) test_cpu.cpp cpu_simd.o -o $@ -lm
+
+test: test_cpu
+	./test_cpu
 
 bench-cpu: mc_cpu
 	mkdir -p results
