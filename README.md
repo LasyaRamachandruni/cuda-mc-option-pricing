@@ -28,7 +28,25 @@ GPU speedups are reported against **both** the scalar single-thread baseline and
 
 ## Results
 
-**GPU numbers are pending a re-run against the multi-core SIMD baseline.** The earlier T4 run compared the GPU only to the scalar CPU code, which overstated the speedup, so those numbers have been withdrawn from this README. (The raw CSV is kept in `results/archive/` for reference only.)
+**Headline (Colab, Tesla T4):** at 4.2M paths the GPU prices both options in **33.8 ms, 81.4x faster than the SIMD + OpenMP CPU baseline** on the same machine (2.75 s) and 679.5x faster than scalar single-thread code. All four implementations agree to within 0.001 standard errors, and the European price is 0.09 SE from Black-Scholes.
+
+### GPU vs CPU (measured on Colab)
+
+From `results/results.csv` (run of `run_benchmark_colab.ipynb`; chart in `results/results.png`):
+
+**Hardware, colab:** CPU Intel(R) Xeon(R) CPU @ 2.00GHz, 2 threads visible to OpenMP; GPU Tesla T4.  
+**Workload:** 252 time steps per path; times are the fastest of several runs. Prices are mean ± 1 standard error; 95% CI = ± 1.96 SE.
+
+| Paths | CPU scalar 1T | CPU SIMD 1T | CPU SIMD+OpenMP (2T) | GPU (CUDA) | GPU vs scalar 1T | GPU vs SIMD+OpenMP | European call (BS 10.4506) | EU distance from BS (SEs) | Asian call |
+|---|---|---|---|---|---|---|---|---|---|
+| 65,536 | 331.8 ms | 60.0 ms | 42.3 ms | 0.64 ms | 518.4x | 66.1x | 10.3635 ± 0.0572 | 1.52 | 5.7579 ± 0.0312 |
+| 262,144 | 1.36 s | 241.0 ms | 167.4 ms | 2.18 ms | 624.1x | 76.8x | 10.4462 ± 0.0287 | 0.15 | 5.7923 ± 0.0156 |
+| 1,048,576 | 5.45 s | 1.01 s | 668.0 ms | 8.52 ms | 640.0x | 78.4x | 10.4550 ± 0.0144 | 0.31 | 5.7816 ± 0.0078 |
+| 4,194,304 | 22.96 s | 3.96 s | 2.75 s | 33.8 ms | 679.5x | 81.4x | 10.4512 ± 0.0072 | 0.09 | 5.7801 ± 0.0039 |
+
+- Colab's CPU here is a Xeon @ 2.00 GHz with 2 threads visible to OpenMP, usually two hyperthreads of one physical core. So 81.4x is GPU vs a small CPU; against a many-core server CPU the ratio would be smaller.
+- The earlier 644–701x figures compared the GPU only with scalar code and have been withdrawn (raw CSV kept in `results/archive/`).
+- GPU time is kernel plus copying the per-block results back, timed with CUDA events after a warm-up launch.
 
 ### CPU only (measured)
 
@@ -46,16 +64,11 @@ GPU speedups are reported against **both** the scalar single-thread baseline and
 - The scalar and SIMD prices agree to within 0.001 SE at every size (same paths).
 - This was measured on a shared sandbox, so timings vary from run to run. They are only comparable with each other, not with any GPU number from a different machine.
 
-### GPU (to be measured)
-
-Steps to produce the GPU table (Colab, free T4):
+### Reproduce the GPU table
 
 1. Open `run_benchmark_colab.ipynb` in Colab (File → Open notebook → GitHub → this repo).
 2. Runtime → Change runtime type → **T4 GPU** → Save.
-3. Runtime → **Run all**. The notebook clones the repo, runs `make mc test_cpu`, runs `./test_cpu`, then `./mc --reps 3 --label colab --csv results/results.csv`, then `python3 scripts/report.py results/results.csv`.
-4. The last cell downloads `colab_results.zip` with `results.csv` (including CPU model, thread count and GPU name), `results.md` (the table) and `results.png`. Commit those three files to `results/` and paste `results.md` here.
-
-Note that Colab's 2 vCPUs are usually two hyperthreads of one physical core, so even the SIMD + OpenMP baseline there is a small CPU. The speedup vs SIMD + OpenMP is the number to quote, together with the core count. A GPU vs a full many-core server CPU would be a smaller ratio again.
+3. Runtime → **Run all**. The last cell downloads `colab_results.zip` with `results.csv`, `results.md` and `results.png`.
 
 ## Run it
 
